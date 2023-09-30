@@ -1,1 +1,1 @@
-# viuws-client
+# viuws-desktop
