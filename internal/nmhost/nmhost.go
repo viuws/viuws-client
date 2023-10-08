@@ -1,4 +1,0 @@
-package nmhost
-
-func Run() {
-}

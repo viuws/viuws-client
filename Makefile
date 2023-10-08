@@ -1,40 +1,41 @@
 SOURCES = $(shell find . -type f -name '*.go')
-BUILDTAGS = remote exclude_graphdriver_btrfs btrfs_noversion exclude_graphdriver_devicemapper containers_image_openpgp
+BUILDTAGS = remote,exclude_graphdriver_btrfs,btrfs_noversion,exclude_graphdriver_devicemapper,containers_image_openpgp
 
 .PHONY: default
 default: all
 
 .PHONY: all
-all: build
+all: darwin linux windows
 
-.PHONY: build
-build: build/viuws
+.PHONY: darwin
+darwin: darwin-amd64 darwin-arm64
 
-build/viuws: $(SOURCES) go.mod go.sum
-	go build -tags "$(BUILDTAGS)" -o $@ ./cmd/viuws
+.PHONY: darwin-amd64
+darwin-amd64: $(SOURCES) go.mod go.sum
+	fyne-cross darwin -arch amd64 -tags $(BUILDTAGS)
 
-.PHONY: run
-run: $(SOURCES) go.mod go.sum
-	go run -tags "$(BUILDTAGS)" ./cmd/viuws/main.go
+.PHONY: darwin-arm64
+darwin-arm64: $(SOURCES) go.mod go.sum
+	fyne-cross darwin -arch arm64 -tags $(BUILDTAGS)
 
-.PHONY: dist
-dist: dist/darwin-amd64/viuws dist/darwin-arm64/viuws dist/linux-amd64/viuws dist/linux-arm64/viuws dist/windows-amd64/viuws.exe
+.PHONY: linux
+linux: linux-amd64 linux-arm64
 
-dist/darwin-amd64/viuws: $(SOURCES) go.mod go.sum
-	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -tags "$(BUILDTAGS)" -o $@ ./cmd/viuws
+.PHONY: linux-amd64
+linux-amd64: $(SOURCES) go.mod go.sum
+	fyne-cross linux -arch amd64 -tags $(BUILDTAGS)
 
-dist/darwin-arm64/viuws: $(SOURCES) go.mod go.sum
-	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -tags "$(BUILDTAGS)" -o $@ ./cmd/viuws
+.PHONY: linux-arm64
+linux-arm64: $(SOURCES) go.mod go.sum
+	fyne-cross linux -arch arm64 -tags $(BUILDTAGS)
 
-dist/linux-amd64/viuws: $(SOURCES) go.mod go.sum
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -tags "$(BUILDTAGS)" -o $@ ./cmd/viuws
+.PHONY: windows
+windows: windows-amd64
 
-dist/linux-arm64/viuws: $(SOURCES) go.mod go.sum
-	GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -tags "$(BUILDTAGS)" -o $@ ./cmd/viuws
-
-dist/windows-amd64/viuws.exe: $(SOURCES) go.mod go.sum
-	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -tags "$(BUILDTAGS)" -o $@ ./cmd/viuws
+.PHONY: windows-amd64
+windows-amd64: $(SOURCES) go.mod go.sum
+	fyne-cross windows -arch amd64 -tags $(BUILDTAGS)
 
 .PHONY: clean
 clean:
-	rm -rf build/ dist/
+	rm -rf fyne-cross

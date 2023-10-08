@@ -1,0 +1,8 @@
+Website = "https://viuws.github.io"
+
+[Details]
+  Icon = "viuws.png"
+  Name = "viuws-desktop"
+  ID = "org.viuws.desktop"
+  Version = "1.0.0"
+  Build = 1
